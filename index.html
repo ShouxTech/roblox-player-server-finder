@@ -77,6 +77,7 @@
 					info.innerText = 'Getting user avatar image';
 
 					let avatarImageURL = await fetch(`https://roblox-player-server-finder.herokuapp.com/headshot-thumbnail/${userID}`);
+					avatarImageURL = await avatarImageURL.text();
 
 					let index = 0;
 					while (true) {
