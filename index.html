@@ -89,7 +89,8 @@
 								if (player.Thumbnail.Url == avatarImageURL) {
 									info.innerText = `Found!\n\n
 									Go to the Roblox website, press Ctrl/Cmd+Shift+I, go to the console and paste in:\n\n
-									Roblox.GameLauncher.joinGameInstance(${placeID}, '${server.Guid}')`;
+									Roblox.GameLauncher.joinGameInstance(${placeID}, '${server.Guid}')\n\n
+									Note: If a user has an identical avatar to the same user you input, it may trigger on the wrong person`;
 									return;
 								}
 							}
