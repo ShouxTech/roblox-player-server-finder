@@ -1,0 +1,115 @@
+<html>
+	<head>
+		<title>Roblox Player Server Finder</title>
+
+		<meta charset = "utf-8">
+
+		<meta name="author" content="CriShoux">
+		<meta name="description" content="Find the server of a Roblox Player">
+		<meta name="keywords" content="Roblox Server, Roblox Player Finder, Roblox Server Joiner, Roblox Stream Sniper">
+
+		<meta property="og:title" content="Roblox Player Server Finder">
+		<meta property="og:description" content="Find the server of a Roblox Player">
+		<meta property="og:type" content="website">
+
+		<style>
+			body {
+				background-color: rgb(25, 25, 25);
+                color: white;
+                font-family: "Trebuchet MS";
+			}
+
+			#main {
+				margin: 20px auto 0 auto;
+				width: 40%;
+				height: 75%;
+			}
+
+			#info {
+				margin-top: 20px;
+				text-align: center;
+			}
+
+			button {
+				background-color: rgb(30, 30, 30);
+				color: white;
+				border: 1px solid rgba(255, 255, 255, 0.5);
+				border-radius: 6px;
+				margin: 20px auto 0 auto;
+				padding: 5px;
+				width: 50%;
+				height: 35px;
+				cursor: pointer;
+				display: block;
+			}
+
+			input {
+				background: rgb(25, 25, 25);
+				color: white;
+				border: 1px solid rgba(255, 255, 255, 0.5);
+				border-radius: 6px;
+				font-size: 15px;
+				width: 100%;
+				height: 35px;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main">
+			<input id="userIDInput" type="text" placeholder="User ID">
+
+			<input id="placeIDInput" style="margin-top: 20px;" type="text" placeholder="Place ID">
+
+			<button id="findBtn" type="button">Find</button>
+
+			<p id="info"></p>
+		</div>
+
+		<script>
+			const userIDInput = document.getElementById('userIDInput');
+			const placeIDInput = document.getElementById('placeIDInput');
+			const findBtn = document.getElementById('findBtn');
+			const info = document.getElementById('info');
+
+			const findUserInServer = async (userID, placeID) => {
+				try {
+					info.innerText = 'Getting user avatar image';
+
+					let avatarImageURL = await fetch(`https://cors-anywhere.herokuapp.com/https://www.roblox.com/headshot-thumbnail/json?userId=${userID}&width=48&height=48`);
+					avatarImageURL = (await avatarImageURL.json()).Url;
+
+					let index = 0;
+					while (true) {
+						let servers = await fetch(`https://roblox-player-server-finder.herokuapp.com/${placeID}/${index}`);
+						servers = await servers.json();
+
+						for (server of servers.Collection) {
+							for (player of server.CurrentPlayers) {
+								if (player.Thumbnail.Url == avatarImageURL) {
+									info.innerText = `Found!\n\n
+									Go to the Roblox website, press Ctrl/Cmd+Shift+I, go to the console and paste in:\n\n
+									Roblox.GameLauncher.joinGameInstance(${placeID}, '${server.Guid}')`;
+									return;
+								}
+							}
+						}
+						info.innerText = `${index}/${servers.TotalCollectionSize} servers scanned`;
+						if (index > servers.TotalCollectionSize) {
+							info.innerText = 'Failed to find server';
+							return;
+						}
+						index += 10;
+					}
+				} catch(err) {
+					console.error(err);
+					info.innerText = err;
+				}
+			}
+
+			findBtn.onclick = () => {
+				findUserInServer(userIDInput.value, placeIDInput.value);
+			}
+		</script>
+	</body>
+</html>
