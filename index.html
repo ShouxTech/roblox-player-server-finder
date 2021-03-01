@@ -76,12 +76,11 @@
 				try {
 					info.innerText = 'Getting user avatar image';
 
-					let avatarImageURL = await fetch(`https://cors-anywhere.herokuapp.com/https://www.roblox.com/headshot-thumbnail/json?userId=${userID}&width=48&height=48`);
-					avatarImageURL = (await avatarImageURL.json()).Url;
+					let avatarImageURL = await fetch(`https://roblox-player-server-finder.herokuapp.com/headshot-thumbnail/${userID}`);
 
 					let index = 0;
 					while (true) {
-						let servers = await fetch(`https://roblox-player-server-finder.herokuapp.com/${placeID}/${index}`);
+						let servers = await fetch(`https://roblox-player-server-finder.herokuapp.com/getgameinstances/${placeID}/${index}`);
 						servers = await servers.json();
 
 						for (server of servers.Collection) {
